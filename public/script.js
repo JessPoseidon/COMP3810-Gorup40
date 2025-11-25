@@ -205,7 +205,7 @@ class SentenceApp {
                     <option value="facts" ${category === 'facts' ? 'selected' : ''}>🔍 Facts</option>
                     <option value="other" ${category === 'other' ? 'selected' : ''}>📌 Other</option>
                 </select>
-                <button type="submit">Save</button>
+                <button type="submit" class="save-edit">Save</button>
                 <button type="button" class="cancel-edit">Cancel</button>
             </form>
         `;
