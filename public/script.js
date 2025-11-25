@@ -243,6 +243,11 @@ class SentenceApp {
             });
         });
 
+        // Save edit: submit message list to exit edit mode
+        listItem.querySelector('.save-edit').addEventListener('click', () => {
+            this.fetchAndRenderSentences();
+        });
+
         // Cancel edit: reload message list to exit edit mode
         listItem.querySelector('.cancel-edit').addEventListener('click', () => {
             this.fetchAndRenderSentences();
@@ -337,7 +342,7 @@ class SentenceApp {
         document.querySelectorAll('.update-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.target.dataset.id;
-                app.editMessage(id); // `app` is your SentenceApp instance
+                app.editMessage(id);
             });
         });
 
