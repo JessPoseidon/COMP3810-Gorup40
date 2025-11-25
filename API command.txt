@@ -12,3 +12,12 @@ http://localhost:8099/api/sentences
 curl "http://localhost:8099/api/sentences"
 curl "http://localhost:8099/api/sentences/users"
 curl "http://localhost:8099/api/sentences/users/Tester01"
+
+//API Update 
+curl -b cookies.txt -X PUT -H "Content-Type: application/json" \
+-d '{"text":"UPDATED! Now you can delete it!","category":"other"}' \
+https://comp3810-gorup40.onrender.com/api/sentences/6925ace9a58e083e443e0b75
+
+//API Delete 
+curl -b cookies.txt -X DELETE \
+https://comp3810-gorup40.onrender.com/api/sentences/6925ace9a58e083e443e0b75 
