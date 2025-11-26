@@ -55,6 +55,21 @@ class SentenceApp {
             }, 300); // Debounce search input
         });
 
+        // ⭐ FIX 1: Event Delegation for dynamically created buttons (DELETE/UPDATE)
+        // This replaces the blocks in renderSentences and prevents listener duplication.
+        this.sentencesList.addEventListener('click', (e) => {
+            const target = e.target;
+            const id = target.dataset.id;
+
+            if (!id) return; // Ignore clicks without a data-id
+
+            if (target.classList.contains('delete-btn')) {
+                this.deleteSentence(id);
+            } else if (target.classList.contains('update-btn')) {
+                this.editMessage(id);
+            }
+        });
+
         // 4. Initial Data Load
         this.loadInitialData();
     }
@@ -135,7 +150,8 @@ class SentenceApp {
 
     async addSentence() {
         const text = this.sentenceInput.value.trim();
-        const name = this.nameInput.value.trim(); // This is the authenticated user's name (read-only)
+        // The name input is read-only and contains the logged-in user's name
+        const name = this.nameInput.value.trim(); 
         const category = this.categorySelect.value;
 
         if (!text || !name) {
@@ -160,7 +176,8 @@ class SentenceApp {
                 // Successful creation
                 this.sentenceInput.value = ''; // Clear input
                 this.categorySelect.value = 'thoughts'; // Reset category
-                await this.loadInitialData(); // Reload and render data
+                // Reload data to see the new message (and potentially update the user filter list)
+                await this.loadInitialData(); 
             } else if (response.status === 401) {
                 // Handle Unauthorized (Not logged in)
                 alert('You must be logged in to post a message. Redirecting to login.');
@@ -189,13 +206,14 @@ class SentenceApp {
         // Retrieve existing text and category from the message element
         const text = listItem.querySelector('.sentence-text').textContent;
         const categoryElem = listItem.querySelector('.category-badge');
+        // Safely extract category from class list, defaulting to 'thoughts'
         const categoryClass = Array.from(categoryElem.classList).find(cls => cls.startsWith('category-'));
         const category = categoryClass ? categoryClass.replace('category-', '') : 'thoughts';
 
         // Replace content with edit form
         listItem.innerHTML = `
             <form class="edit-form" data-id="${id}">
-                <input type="text" class="edit-text" value="${text.trim()}" style="width:60%;" maxlength="500">
+                <input type="text" class="edit-text" value="${this.escapeHtml(text.trim())}" style="width:60%;" maxlength="500">
                 <select class="edit-category">
                     <option value="thoughts" ${category === 'thoughts' ? 'selected' : ''}>💭 Thoughts</option>
                     <option value="quotes" ${category === 'quotes' ? 'selected' : ''}>💬 Quotes</option>
@@ -225,6 +243,7 @@ class SentenceApp {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ text: newText, category: newCategory })
             })
+            // Use .then(res => res.json().then(data => ({status: res.status, data}))) for proper error body access
             .then(res => res.json().then(data => ({status: res.status, data})))
             .then(({status, data}) => {
                 if (status === 200) {
@@ -232,6 +251,7 @@ class SentenceApp {
                     this.fetchAndRenderSentences();
                 } else if (status === 403 || status === 401) {
                     alert(data.error || 'Not authorized to update this message.');
+                    this.fetchAndRenderSentences(); // Refresh to exit edit mode if unauthorized
                 } else if (status === 400) {
                     alert(data.error || 'Message cannot be empty.');
                 } else {
@@ -240,14 +260,13 @@ class SentenceApp {
             })
             .catch(err => {
                 alert('Network error: ' + err.message);
+                this.fetchAndRenderSentences(); // Refresh to exit edit mode on network error
             });
         });
 
-        // Save edit: submit message list to exit edit mode
-        listItem.querySelector('.save-edit').addEventListener('click', () => {
-            this.fetchAndRenderSentences();
-        });
-
+        // ⭐ FIX 2: Remove the interfering click listener on the Save button.
+        // The form.submit handler above correctly handles the save and refresh on success.
+        
         // Cancel edit: reload message list to exit edit mode
         listItem.querySelector('.cancel-edit').addEventListener('click', () => {
             this.fetchAndRenderSentences();
@@ -330,30 +349,14 @@ class SentenceApp {
             this.sentencesList.appendChild(listItem);
         });
         
-        // Add event listeners for all dynamically created delete buttons
-        this.sentencesList.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const id = e.target.dataset.id;
-                this.deleteSentence(id);
-            });
-        });
-
-        // Add event listeners for all dynamically created update buttons
-        document.querySelectorAll('.update-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = e.target.dataset.id;
-                app.editMessage(id);
-            });
-        });
-
-
+        // NOTE: The event listener binding blocks are removed from here due to FIX 1 (Event Delegation).
+        // The single delegated listener in init() handles all clicks on these buttons.
     }
 
     renderActiveFiltersText() {
         this.activeFilters.innerHTML = '';
         const parts = [];
 
-        // Filter and Sort text generation... (omitted for brevity, assume correct from prior version)
         if (this.currentFilters.category !== 'all') {
             parts.push(`Category: **${this.getCategoryDisplayName(this.currentFilters.category)}**`);
         }
@@ -401,6 +404,7 @@ class SentenceApp {
 document.addEventListener('DOMContentLoaded', function() {
     // Only initialize the app if the required DOM elements are found (i.e., on the dashboard page)
     if (document.getElementById('sentencesList')) {
+        // We still assign to window.app, but class methods now use 'this'
         window.app = new SentenceApp();
     }
 });
