@@ -1,8 +1,5 @@
 API Login
-curl -c cookies.txt -X POST -H "Content-Type: application/json" \
--d "{\"username\":\"Tester01\",\"password\":\"12345678\"}" \
-"https://comp3810-gorup40.onrender.com/auth/login"
-
+curl -c cookies.txt -X POST -H "Content-Type: application/x-www-form-urlencoded" -d "username=Tester01&password=12345678" "https://comp3810-gorup40.onrender.com/auth/login"
 
 curl -b cookies.txt -X POST -H "Content-Type: application/json" \
 -d "{\"text\":\"This is a beautiful day\",\"category\":\"thoughts\"}" \
@@ -20,8 +17,9 @@ curl "https://comp3810-gorup40.onrender.com/api/sentences/users/Tester01"
 # 4. API Update
 curl -b cookies.txt -X PUT -H "Content-Type: application/json" \
 -d "{\"text\":\"UPDATED! Now you can delete it!\",\"category\":\"other\"}" \
-"https://comp3810-gorup40.onrender.com/api/sentences/6925ace9a58e083e443e0b75"
+"https://comp3810-gorup40.onrender.com/api/sentences/692f02391d0ef9e1ef2045d1"
 
 # 5. API Delete
 curl -b cookies.txt -X DELETE \
 "https://comp3810-gorup40.onrender.com/api/sentences/6925ace9a58e083e443e0b75"
+
