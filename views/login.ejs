@@ -9,26 +9,18 @@
     
     <style>
         :root {
-            /* Kept core colors for alerts */
             --color-bg-deep: #0f172a; 
             --color-red: #ef4444; 
             --color-green: #22c55e;
-            
-            /* Primary Theme Color (Purple) */
             --color-accent: #9333ea; /* Deep Violet */
             --color-accent-hover: #c026d3; /* Vibrant Magenta for Hover */
-            
-            /* White card specific colors (Dark text/borders on light background) */
             --color-card-text-dark: #1f2937;
             --color-card-muted-dark: #6b7280;
             --color-card-input-light: #f3f4f6;
             --color-card-border-light: #e5e7eb;
-            
-            /* New color for the main title */
             --color-title-dark: #000000;
         }
         
-        /* --- Dynamic Gradient Background Styles --- */
         .dynamic-gradient-bg {
             background: linear-gradient(-45deg, #4c0099, #7c3aed, #f472b6, #38bdf8);
             background-size: 400% 400%;
@@ -46,7 +38,6 @@
                 background-position: 0% 50%;
             }
         }
-        /* --- End Dynamic Gradient Styles --- */
 
         body {
             font-family: 'Inter', sans-serif;
@@ -60,7 +51,6 @@
             overflow: hidden; 
         }
 
-        /* Applying the dynamic class to the body */
         body.dynamic-gradient-bg {
              background: linear-gradient(-45deg, #4c0099, #7c3aed, #f472b6, #38bdf8);
              background-size: 400% 400%;
@@ -81,7 +71,6 @@
         }
 
         h1 { 
-            /* Changed color to black for high contrast */
             color: var(--color-title-dark); 
             margin-top: 0;
             margin-bottom: 0.5rem;
@@ -193,7 +182,6 @@
             text-decoration: underline;
         }
 
-        /* Styles for the message containers */
         .message {
             padding: 1rem;
             border-radius: 6px;
@@ -224,20 +212,14 @@
     </style>
 </head>
 <body class="dynamic-gradient-bg">
-
-    <!-- Login Card (Content, z-10) -->
     <div class="login-card">
         <h1>Group 40</h1>
         <span class="subtitle">Sign in to the Chat Forum</span>
-        
-        <!-- FIX 1: Display Success Message (from successful registration) -->
         <% if (typeof successMessage !== 'undefined' && successMessage) { %>
             <div class="message success-message">
                 <%= successMessage %>
             </div>
         <% } %>
-
-        <!-- FIX 2: Display Error Message (from failed login or query parameter) -->
         <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
             <div class="message error-message">
                 <%= errorMessage %>
