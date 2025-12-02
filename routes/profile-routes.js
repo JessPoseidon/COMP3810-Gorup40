@@ -7,7 +7,6 @@ const authCheck = (req, res, next) => {
     }
 };
 router.get('/', authCheck, (req, res) => {
-    // This route will render the protected dashboard
     res.send('Welcome to your profile! (Needs dashboard.ejs view)');
 });
 module.exports = router;
