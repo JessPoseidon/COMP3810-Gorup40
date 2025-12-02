@@ -4,64 +4,63 @@ const GoogleStrategy = require('passport-google-oauth20');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 
-// --- 1. Serialization/Deserialization ---
-// Used to store user ID in the cookie
 passport.serializeUser((user, done) => {
-    // We only serialize the user's MongoDB ID
     done(null, user.id);
 });
 
-// Used to retrieve the user object from the database using the ID in the cookie
 passport.deserializeUser((id, done) => {
     User.findById(id).then((user) => {
         done(null, user);
+    }).catch(err => {
+        console.error("Error during deserialization:", err);
+        done(err);
     });
 });
 
-// --- 2. Local Strategy (Login) ---
 passport.use('local-login', new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',
 }, (username, password, done) => {
-    User.findOne({ 
+    User.findOne({
         $or: [
-            // Check if the input matches the stored username (case-insensitive search is best practice)
             { username: new RegExp(`^${username}$`, 'i') }, 
-            // Check if the input matches the stored email
-            { email: username.toLowerCase() }
+            { email: new RegExp(`^${username}$`, 'i') } 
         ]
     }).then(async (user) => {
         if (!user) {
-            // User not found (incorrect username/email)
             return done(null, false, { message: 'Incorrect username or password.' });
         }
         if (!user.password) {
-             return done(null, false, { message: 'This account was created via OAuth (Google) and cannot be logged into with a password.' });
+            return done(null, false, { message: 'This account was created via OAuth and requires Google login.' });
         }
-        const match = await bcrypt.compare(password, user.password);
-        if (match) {
-            // Successful login
-            return done(null, user);
-        } else {
-            // Password mismatch
-            return done(null, false, { message: 'Incorrect username or password.' });
+        
+        try { 
+            const match = await bcrypt.compare(password, user.password);
+            if (match) {
+                return done(null, user);
+            } else {
+                return done(null, false, { message: 'Incorrect username or password.' });
+            }
+        } catch (err) {
+            console.error("Bcrypt comparison error:", err);
+            return done(err); 
         }
+
     }).catch(err => {
-        // Handle database errors
+        console.error("Database error during local login:", err);
         return done(err);
     });
 }));
 
 
-// --- 3. Google Strategy (OAuth) ---
 passport.use(
     new GoogleStrategy({
         callbackURL: '/auth/google/redirect',
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        proxy: true // CRITICAL for cloud deployments
+        proxy: true
     }, (accessToken, refreshToken, profile, done) => {
-        // Check if user already exists in our database
+        
         User.findOne({ googleId: profile.id }).then((currentUser) => {
             if (currentUser) {
                 done(null, currentUser);
@@ -69,12 +68,18 @@ passport.use(
                 new User({
                     googleId: profile.id,
                     username: profile.displayName,
-                    email: profile.emails ? profile.emails[0].value : null, // Get email if available
+                    email: profile.emails ? profile.emails[0].value : null, 
                     thumbnail: profile.photos[0].value
                 }).save().then((newUser) => {
                     done(null, newUser);
+                }).catch(err => { 
+                    console.error("Database error during new user creation (Google):", err);
+                    done(err);
                 });
             }
+        }).catch(err => { 
+            console.error("Database error during findOne (Google):", err);
+            done(err);
         });
     })
 );
