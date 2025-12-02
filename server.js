@@ -58,15 +58,13 @@ app.use('/profile', profileRoutes);
 
 app.get('/', (req, res) => {
     if (req.user) {
-        res.redirect('/profile/dashboard'); 
+        res.redirect('/auth/dashboard'); 
     } else {
         res.redirect('/auth/login');
     }
 });
 
-app.get('/dashboard', (req, res) => {
-    res.redirect('/profile/dashboard');
-});
+// Removed redundant /dashboard redirect to streamline routing to /auth/dashboard
 
 app.post('/auth/test-login', (req, res) => {
     req.login({ 
