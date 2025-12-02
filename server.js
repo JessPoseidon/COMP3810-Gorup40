@@ -88,10 +88,7 @@ app.get('/dashboard', (req, res) => {
     res.redirect('/auth/dashboard');
 });
 
-
-// ------------------------------------------------------------------
 // C. CONSOLIDATED CRUD API ROUTES (Moved from crud-routes.js)
-// ------------------------------------------------------------------
 // testing
 app.post('/auth/test-login', (req, res) => {
     req.login({ 
@@ -230,7 +227,6 @@ app.put('/api/sentences/:id', isAuthenticatedApi, async (req, res) => {
   }
 });
 
-// --- Helper: Get available users (For filter dropdown) ---
 app.get('/api/sentences/users', async (req, res) => {
     try {
         const users = await Sentence.distinct('name');
@@ -240,7 +236,6 @@ app.get('/api/sentences/users', async (req, res) => {
     }
 });
 
-// --- Get available users'sentences ---
 app.get('/api/sentences/users/:name', async (req, res) => {
     try {
         const user = req.params.name;
