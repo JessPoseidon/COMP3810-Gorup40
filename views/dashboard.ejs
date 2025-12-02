@@ -5,34 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Community Message Board</title>
     <style>
-        /* --- Adopted CSS Variables from Login/Register Views --- */
         :root {
-            /* Kept core colors for alerts */
             --color-bg-deep: #0f172a; 
             --color-red: #ef4444; 
             --color-green: #22c55e;
-            
-            /* Primary Theme Color (Purple) */
             --color-accent: #9333ea;
             --color-accent-hover: #c026d3;
-            
-            /* White card specific colors (Dark text/borders on light background) */
             --color-card-text-dark: #1f2937;
             --color-card-muted-dark: #6b7280;
             --color-card-input-light: #f3f4f6;
             --color-card-border-light: #e5e7eb;
-            
-            /* Color for the main title (Black) */
             --color-title-dark: #000000;
         }
-        
-        /* --- Dynamic Gradient Background Styles (Copied from Login/Register) --- */
         .dynamic-gradient-bg {
             background: linear-gradient(-45deg, #4c0099, #7c3aed, #f472b6, #38bdf8);
             background-size: 400% 400%;
             animation: gradient-flow 30s ease infinite; 
         }
-
         @keyframes gradient-flow {
             0% {
                 background-position: 0% 50%;
@@ -44,8 +33,6 @@
                 background-position: 0% 50%;
             }
         }
-        /* --- End Dynamic Gradient Styles --- */
-
         * {
             margin: 0;
             padding: 0;
@@ -59,15 +46,12 @@
             min-height: 100vh;
             padding: 20px;
         }
-        
-        /* Apply the dynamic class to the body */
         body.dynamic-gradient-bg {
              background: linear-gradient(-45deg, #4c0099, #7c3aed, #f472b6, #38bdf8);
              background-size: 400% 400%;
              animation: gradient-flow 30s ease infinite; 
         }
-        /* --- Existing Dashboard Styles Below --- */
-        
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -308,7 +292,6 @@
             border-left: 4px solid #667eea;
         }
 
-        /* Color classes for categories */
         .sentence-item.thoughts { border-left-color: #667eea; }
         .sentence-item.quotes { border-left-color: #ff6b6b; }
         .sentence-item.stories { border-left-color: #4ecdc4; }
