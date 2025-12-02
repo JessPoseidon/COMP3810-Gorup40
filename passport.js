@@ -23,8 +23,6 @@ passport.use('local-login', new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password',
 }, (username, password, done) => {
-    
-    // FIX: Search for the user using EITHER the username OR the email address
     User.findOne({ 
         $or: [
             // Check if the input matches the stored username (case-insensitive search is best practice)
@@ -37,13 +35,9 @@ passport.use('local-login', new LocalStrategy({
             // User not found (incorrect username/email)
             return done(null, false, { message: 'Incorrect username or password.' });
         }
-
-        // Check if the account was registered locally (i.e., has a password)
         if (!user.password) {
              return done(null, false, { message: 'This account was created via OAuth (Google) and cannot be logged into with a password.' });
         }
-
-        // Compare the provided password with the hashed password in the database
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             // Successful login
@@ -62,7 +56,6 @@ passport.use('local-login', new LocalStrategy({
 // --- 3. Google Strategy (OAuth) ---
 passport.use(
     new GoogleStrategy({
-        // Options for the Google strategy
         callbackURL: '/auth/google/redirect',
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -71,10 +64,8 @@ passport.use(
         // Check if user already exists in our database
         User.findOne({ googleId: profile.id }).then((currentUser) => {
             if (currentUser) {
-                // Already have this user, log them in
                 done(null, currentUser);
             } else {
-                // If not, create new user
                 new User({
                     googleId: profile.id,
                     username: profile.displayName,
@@ -87,5 +78,3 @@ passport.use(
         });
     })
 );
-
-// Note: Facebook Strategy removed per user request
